@@ -1,0 +1,14 @@
+**/.git
+**/.git/**
+**/__pycache__/**
+**/*.pyc
+**/*.db
+**/*.db-*
+**/*.sqlite
+**/*.sqlite3
+**/.env
+**/.env.*
+**/*.zip
+**/backups/**
+**/*.log
+**/.pytest_cache/**

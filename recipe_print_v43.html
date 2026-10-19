@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>lovetech · Технологическая карта № {{recipe.id}} · редакция {{recipe.version}}</title>
+<style>
+@page{size:210mm 297mm;margin:12mm 10mm 13mm}
+:root{--red:#c8102e;--ink:#1e293b;--line:#aab2bd;--light:#f2f3f5}
+*{box-sizing:border-box}body{margin:0;background:#e8eaed;color:var(--ink);font:11px/1.38 Arial,Helvetica,sans-serif}
+.sheet{width:210mm;min-height:297mm;margin:18px auto;background:white;padding:12mm 10mm 13mm;box-shadow:0 4px 18px #0002}
+header{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;border-bottom:2px solid var(--red);padding-bottom:10px}
+.brand{font-weight:800;font-size:26px;letter-spacing:-1px}.brand span{color:var(--red)}
+header h1{text-align:right;font-size:17px;margin:4px 0 3px}header .sub{text-align:right;color:#5c6676;font-size:10px}
+.meta{width:100%;border-collapse:collapse;margin:12px 0 6px}.meta td{border:1px solid var(--line);padding:7px;vertical-align:top;width:50%}.meta small{display:block;color:#697487;font-size:9px;margin-bottom:3px}.meta strong{font-size:11px}
+h2{font-size:12px;margin:15px 0 6px;break-after:avoid;page-break-after:avoid}h2 .num{display:inline-block;background:var(--red);color:#fff;border-radius:50%;width:19px;height:19px;text-align:center;line-height:19px;margin-right:6px}
+table.data{width:100%;max-width:100%;table-layout:fixed;border-collapse:collapse;margin-bottom:8px}table.data td,table.data th{border:1px solid var(--line);padding:6px 7px;vertical-align:top;overflow-wrap:anywhere}table.data th{background:var(--light);text-align:left;font-size:10px}thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}
+.note{border-left:3px solid var(--red);background:#f7f7f8;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.draft{border:2px solid #ad3445;padding:9px 12px;color:#9e2037;font-weight:bold;margin:12px 0}
+.muted{color:#697487}.signatures{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.signature{border:1px solid var(--line);padding:10px;min-height:76px}.line{border-bottom:1px solid #6b7280;display:inline-block;min-width:100px;height:17px}
+.footer{margin-top:14px;border-top:1px solid var(--line);padding-top:8px;font-size:9px;color:#697487}
+.toolbar{position:sticky;top:0;background:white;box-shadow:0 2px 9px #0002;padding:12px;display:flex;justify-content:center;gap:10px}.toolbar button,.toolbar a{background:var(--red);border:0;border-radius:7px;color:white;text-decoration:none;padding:9px 14px;font:600 13px Arial;cursor:pointer}
+@media print{html,body{width:190mm!important;max-width:190mm!important;margin:0!important;padding:0!important;background:white!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.toolbar{display:none!important}.sheet{width:190mm!important;max-width:190mm!important;min-height:0;margin:0!important;padding:0!important;box-shadow:none!important}}
+</style></head><body>
+<div class="toolbar"><button onclick="window.print()">Печать / сохранить PDF (A4, книжная)</button><a href="/recipe/{{recipe.id}}">Вернуться к техкарте</a></div>
+<main class="sheet">
+<header><div><div class="brand">love<span>tech</span></div><div class="muted">Управление химическим производством</div></div><div><h1>ТЕХНОЛОГИЧЕСКАЯ КАРТА</h1><div class="sub">ТК № {{recipe.id}} · редакция {{recipe.version}}</div></div></header>
+{% if recipe.status != 'approved' %}<div class="draft">ЧЕРНОВИК — НЕ УТВЕРЖДЕНО. Не использовать как действующую технологическую инструкцию.</div>{% endif %}
+<table class="meta"><tr><td><small>Продукция</small><strong>{{recipe.product}}</strong></td><td><small>Номер и редакция ТК</small><strong>ТК-{{recipe.id}} / {{recipe.version}}</strong></td></tr><tr><td><small>Статус</small><strong>{{'Утверждена' if recipe.status == 'approved' else 'Черновик'}}</strong></td><td><small>Дата создания редакции</small><strong>{{recipe.created_at}}</strong></td></tr></table>
+<h2><span class="num">1</span> Рецептура и нормы сырья</h2>
+<p class="muted">Состав указан в массовых долях, %. Масса загрузки рассчитывается отдельно для конкретного производственного задания.</p>
+<table class="data"><thead><tr><th style="width:35px">№</th><th>Наименование сырья</th><th style="width:80px">Доля, %</th><th style="width:70px">Ед.</th></tr></thead><tbody>{% for item in items %}<tr><td>{{loop.index}}</td><td>{{item.name}}</td><td>{{'%.4f'|format(item.percent)}}</td><td>{{item.unit}}</td></tr>{% else %}<tr><td colspan="4">Компоненты не указаны</td></tr>{% endfor %}<tr><td colspan="2"><b>ИТОГО</b></td><td><b>{{'%.4f'|format(total)}}</b></td><td>%</td></tr></tbody></table>
+<h2><span class="num">2</span> Последовательность технологических операций</h2>
+<table class="data"><thead><tr><th style="width:38px">№</th><th>Описание операции</th><th style="width:30%">Контрольная точка</th></tr></thead><tbody>{% for step in steps %}<tr><td>{{step.position}}</td><td>{{step.instruction}}</td><td>{{step.control_point or '—'}}</td></tr>{% else %}<tr><td colspan="3">Операции не указаны</td></tr>{% endfor %}</tbody></table>
+<h2><span class="num">3</span> Технологические параметры и допуски</h2>
+<table class="data"><thead><tr><th style="width:36px">Этап</th><th>Показатель</th><th style="width:28%">Норма / допуск</th><th style="width:22%">Метод контроля</th></tr></thead><tbody>
+{% set ns=namespace(n=0) %}{% for step in steps %}{% for p in step.parameters %}{% set ns.n=ns.n+1 %}<tr><td>{{step.position}}</td><td>{{p.name}}{% if p.required %} *{% endif %}</td><td>{{p.min_value if p.min_value is not none else '—'}} — {{p.max_value if p.max_value is not none else '—'}} {{p.unit or ''}}</td><td>{{p.method or '—'}}</td></tr>{% endfor %}{% endfor %}{% if ns.n==0 %}<tr><td colspan="4">Контрольные параметры не заданы в ТК</td></tr>{% endif %}</tbody></table>
+<p class="muted">* Обязательный контрольный параметр. Отсутствующие в ТК значения не подставляются автоматически.</p>
+<h2><span class="num">4</span> Примечания и особые указания</h2><div class="note">{{recipe.notes or 'Особые указания не заданы.'}}</div>
+<h2><span class="num">5</span> Ознакомление и бумажные подписи</h2><div class="signatures"><div class="signature"><b>Технолог</b><p>ФИО: <span class="line"></span></p>Подпись: __________ Дата: __________</div><div class="signature"><b>Аппаратчик</b><p>ФИО: <span class="line"></span></p>Подпись: __________ Дата: __________</div></div>
+<p class="footer">lovetech · ТК-{{recipe.id}} · редакция {{recipe.version}} · Распечатано {{printed_at}}. Статус редакции проверяйте в системе. Печатная форма не заменяет бумажное утверждение, если оно предусмотрено вашим порядком.</p>
+</main></body></html>
